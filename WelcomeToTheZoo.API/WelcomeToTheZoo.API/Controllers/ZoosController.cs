@@ -34,7 +34,6 @@ namespace WelcomeToTheZoo.API.Controllers
             return created > 0
                 ? Ok(zoo)
                 : BadRequest("Unable to add zoo");
-
         }
 
         [HttpGet(ApiRoutes.Zoos.GetAll)]
@@ -53,7 +52,26 @@ namespace WelcomeToTheZoo.API.Controllers
                 });
             }
             return Ok(response);
+        }
 
+        [HttpGet(ApiRoutes.Zoos.GetById)]
+        public async Task<IActionResult> GetById([FromRoute] int id)
+        {
+            Zoo? zoo = await _db.Zoos.SingleOrDefaultAsync(currentZoo => currentZoo.Id == id);
+
+            if (zoo != null)
+            {
+                ZooResponse response = new ZooResponse
+                {
+                    Id = zoo.Id,
+                    Name = zoo.Name,
+                    Address = zoo.Address,
+                    Acres = zoo.Acres
+                };
+                return Ok(response);
+            }
+
+            return NotFound($"The zoo with the {id} id cannot be found!");
         }
     }
 }
